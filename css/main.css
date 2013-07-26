@@ -1,0 +1,13 @@
+body {
+	background-color: #FCFCFC;;
+}
+.gim-collapsible-toggle {
+	background-color: #CCC;
+	border-radius: 5px;
+	border: 1px solid #AAA;
+	display: block;
+	margin: .4em 0;
+}
+article {
+	padding: 1em;
+}

@@ -1,0 +1,90 @@
+<html>
+	<head>
+		<title>Setting Up Require.js</title>
+		<link rel="stylesheet" href="/css/bootstrap.min.css">
+		<link rel="stylesheet" href="/css/main.css">
+	</head>
+	<body>
+		<h1>Let's Learn How to Setup Require.js</h1>
+		<article id="what-it-is" class="collapsible expanded">
+			<h1>What is it?</h1>
+			<p>
+				Require.js is a module system for client-side javascript. It embraces asynchronous loading.
+			</p>
+			<p>It looks like this inside of <strong>myApp.js</strong></p>
+			<pre><code>
+define(
+['jquery', 'knockout', 'shootZombies'],
+function($, ko, zombieShooter) {
+	var $ctx = $('#main');
+	var viewModel = zombieShooter();
+	ko.applyBindings(viewModel,k $ctx);
+});
+			</code></pre>
+		</article>
+		
+		<article id="using-data-main" class="collapsible">
+			<h1>The Wrong (Let's Say Limited) Way</h1>
+			<section id="as-recommended">
+			<p>As recommended on the site:</p>
+			<pre><code>
+&lt;script src="/js/require.js" data-main="/js/myApp.js"&gt;&lt;/script&gt;				
+			</code></pre>
+			
+			</section>
+			<section id="the-problems">
+				<p>You usually need a decent amount of global configuration</p>
+<pre><code>
+requirejs.config({
+	 baseUrl: '/js'
+	,paths: {
+		 'jquery': 'jquery-2.0.3.min'
+		,'underscore': 'underscore-min'
+		,'jqueryUi.widget': 'jquery-ui.widget.1.10.3'
+	}
+    ,shim: {
+     	 underscore: { exports: '_' }
+        ,'jqueryUi.widget': {
+            deps: ['jquery']
+        } 
+     }
+});
+
+require(['jquery', 'underscore']);
+</code></pre>				
+				<p>The data-main approach works fine so long as <strong>your entire site is exactly one page</strong> or you <strong>have no global configuration</strong> and <strong>you're not using the require.js optimizer</strong>.</p>
+				<p>If you have multiple pages then you need multiple bootstrapping data-main classes and need to duplicate this configuration.</p>
+				<p>If you use the require.js optimizer you're bundling the duplciated code in each bundle</p>
+			</section>
+		</article>
+
+		<article id="better-implementation" class="collapsible">
+			<h2>A Better Setup</h2>
+			<p>Don't use data-main. It is too simplistic for real-world use. Instead load up your configuration file manually.</p>
+			<pre><code>
+&lt;script src="/js/require.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+	require(['/js/configuration.js'], function(){  	// load up configuration
+		require(['presentation']);  				// then load up your page-specific file
+	});
+&lt;/script&gt;				
+			</code></pre>
+
+			<p>Each page has <strong>three synchronous script requests</strong> instead of two but less duplication and less bytes to transfer when you run the require.js optimizer.</p>
+			<ul>
+				<li>require.js (cached)</li>
+				<li>configuration.js (cached)</li>
+				<li>pageSpecificCode.js</li>
+			</ul>
+			<p>That's what this page does</p>
+		</article>
+		
+
+		<script src="/js/require.js"></script>
+		<script>
+			require(['/js/configuration.js'], function(){
+				require(['presentation']);
+			});
+		</script>
+	</body>
+</html>
